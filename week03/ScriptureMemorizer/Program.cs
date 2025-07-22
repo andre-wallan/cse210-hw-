@@ -1,50 +1,29 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
 class Program
 {
-    static void Main(string[] args)
+    static void Main()
     {
-        Console.WriteLine("Welcome to the Scripture Memorizer!");
-        Console.Write("How many words do you want to hide per round? (e.g., 3): ");
-        int wordsToHide = int.TryParse(Console.ReadLine(), out int n) ? n : 3;
+        var reference = new Reference("Proverbs", 3, 5, 6);
+        var scripture = new Scripture(reference, "Trust in the Lord with all thine heart and lean not unto thine own understanding.");
 
-        Scripture scripture = ScriptureLibrary.GetRandomScripture("scriptures.txt");
-
-        DateTime startTime = DateTime.Now;
-
-        while (!scripture.AllWordsHidden())
+        while (true)
         {
             Console.Clear();
             Console.WriteLine(scripture.GetDisplayText());
-            Console.WriteLine("\nPress Enter to hide words, type 'hint' for a hint, or type 'quit' to exit.");
-            string input = Console.ReadLine().Trim().ToLower();
+            Console.WriteLine("\nPress Enter to hide more words or type 'quit' to exit:");
+            string input = Console.ReadLine();
 
-            if (input == "quit")
+            if (input.ToLower() == "quit")
                 break;
 
-            if (input == "hint")
+            if (!scripture.AllWordsHidden())
+                scripture.HideRandomWords();
+            else
             {
-                Console.WriteLine("\nHint: " + scripture.GetHintText());
-                Console.WriteLine("Press Enter to continue...");
-                Console.ReadLine();
-                continue;
+                Console.Clear();
+                Console.WriteLine(scripture.GetDisplayText());
+                Console.WriteLine("\nAll words are hidden. Program will now exit.");
+                break;
             }
-
-            scripture.HideRandomWords(wordsToHide);
         }
-
-        Console.Clear();
-        Console.WriteLine("Final Scripture:\n");
-        Console.WriteLine(scripture.GetDisplayText());
-
-        TimeSpan duration = DateTime.Now - startTime;
-        Console.WriteLine($"\nMemorization Time: {duration.TotalSeconds:F1} seconds");
-
-        ProgressTracker.SaveProgress(scripture.Reference.GetDisplayText());
-
-        Console.WriteLine("\nThank you for using Scripture Memorizer!");
     }
 }

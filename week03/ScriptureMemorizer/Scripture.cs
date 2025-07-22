@@ -1,48 +1,40 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 
+[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public class Scripture
 {
-    public Reference Reference { get; private set; }
+    private Reference _reference;
     private List<Word> _words;
+    private Random _rand = new Random();
 
     public Scripture(Reference reference, string text)
     {
-        Reference = reference;
+        _reference = reference;
         _words = text.Split(' ').Select(w => new Word(w)).ToList();
     }
 
-    public void HideRandomWords(int count)
+    public void HideRandomWords(int count = 3)
     {
-        Random rand = new Random();
-        var visibleWords = _words.Where(w => !w.IsHidden()).ToList();
+        var visibleWords = _words.Where(w => !w.IsHidden).ToList();
+        if (visibleWords.Count == 0) return;
+
         for (int i = 0; i < count && visibleWords.Count > 0; i++)
         {
-            var word = visibleWords[rand.Next(visibleWords.Count)];
+            var word = visibleWords[_rand.Next(visibleWords.Count)];
             word.Hide();
             visibleWords.Remove(word);
         }
     }
 
+    public bool AllWordsHidden() => _words.All(w => w.IsHidden);
+
     public string GetDisplayText()
     {
-        return $"{Reference.GetDisplayText()} - " + string.Join(" ", _words.Select(w => w.GetDisplayText()));
+        return $"{_reference}\n\n" + string.Join(" ", _words.Select(w => w.GetDisplay()));
     }
 
-    public bool AllWordsHidden()
+    private string GetDebuggerDisplay()
     {
-        return _words.All(w => w.IsHidden());
-    }
-
-    public string GetHintText()
-    {
-        return $"{Reference.GetDisplayText()} - " + string.Join(" ", _words.Select(w =>
-        {
-            if (w.IsHidden())
-                return w.FirstLetterHint();
-            else
-                return w.GetDisplayText();
-        }));
+        return ToString();
     }
 }

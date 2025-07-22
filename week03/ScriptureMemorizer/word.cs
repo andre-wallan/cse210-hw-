@@ -9,23 +9,7 @@ public class Word
         _isHidden = false;
     }
 
-    public void Hide()
-    {
-        _isHidden = true;
-    }
-
-    public bool IsHidden()
-    {
-        return _isHidden;
-    }
-
-    public string GetDisplayText()
-    {
-        return _isHidden ? new string('_', _text.Length) : _text;
-    }
-
-    public string FirstLetterHint()
-    {
-        return _text.Length > 0 ? _text[0] + new string('_', _text.Length - 1) : "";
-    }
+    public void Hide() => _isHidden = true;
+    public bool IsHidden => _isHidden;
+    public string GetDisplay() => _isHidden ? new string('_', _text.Length) : _text;
 }
